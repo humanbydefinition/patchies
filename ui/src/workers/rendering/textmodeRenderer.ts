@@ -52,6 +52,7 @@ export class TextmodeRenderer {
 	// textmode.js text modifier
 	public tm: Textmodifier | null = null;
 	public textmode: typeof import('textmode.js') | null = null;
+	public textmodeSynth: typeof import('textmode.synth.js') | null = null;
 
 	private constructor(
 		config: TextmodeConfig,
@@ -169,20 +170,44 @@ export class TextmodeRenderer {
 				this.textmode = await import('textmode.js');
 			}
 
+			// Import textmode.synth.js for procedural synth functions
+			if (!this.textmodeSynth) {
+				this.textmodeSynth = await import('textmode.synth.js');
+			}
+
 			// Create a textmode if not already created
 			if (!this.tm) {
 				const { createFiltersPlugin } = await import('textmode.filters.js');
+				const { SynthPlugin } = this.textmodeSynth;
+
 				this.tm = this.textmode.create({
 					width,
 					height,
 					fontSize: 18,
 					frameRate: 60,
-					plugins: [createFiltersPlugin()],
+					plugins: [createFiltersPlugin(), SynthPlugin],
 
 					// @ts-expect-error -- offscreen canvas hack
 					canvas: this.offscreenCanvas
 				});
 			}
+
+			// Extract synth functions for user code access
+			const {
+				// Source generators
+				osc,
+				noise,
+				voronoi,
+				gradient,
+				shape,
+				solid,
+				src,
+				// Compositional functions
+				char,
+				charColor,
+				cellColor,
+				paint
+			} = this.textmodeSynth;
 
 			// Create extra context for textmode-specific functionality
 			const extraContext = {
@@ -191,6 +216,21 @@ export class TextmodeRenderer {
 				textmode: this.textmode,
 				width: width,
 				height: height,
+
+				// textmode.synth.js source generators (hydra-style)
+				osc,
+				noise,
+				voronoi,
+				gradient,
+				shape,
+				solid,
+				src,
+
+				// textmode.synth.js compositional functions
+				char,
+				charColor,
+				cellColor,
+				paint,
 
 				requestAnimationFrame: (callback: FrameRequestCallback) => {
 					this.animationId = requestAnimationFrame(() => {
