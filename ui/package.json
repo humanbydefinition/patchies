@@ -126,8 +126,8 @@
 		"stats.js": "^0.17.0",
 		"supersonic-scsynth": "^0.25.5",
 		"textmode.filters.js": "^1.1.0",
-		"textmode.js": "^0.9.1",
-		"textmode.synth.js": "1.1.1",
+		"textmode.js": "^0.9.2-beta.2",
+		"textmode.synth.js": "^1.1.1",
 		"three": "^0.182.0",
 		"tone": "^15.1.22",
 		"ts-pattern": "^5.8.0",
@@ -144,6 +144,9 @@
 	],
 	"patchedDependencies": {
 		"superdough@1.2.6": "patches/superdough@1.2.6.patch"
+	},
+	"overrides": {
+		"textmode.js": "^0.9.2-beta.2"
 	},
 	"packageManager": "bun@1.2.0",
 	"lint-staged": {
